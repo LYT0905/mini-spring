@@ -41,11 +41,13 @@ public class PropertyValues {
 
     /**
      * 添加配置属性值
+     * @param type 类型
      * @param propertyName 配置属性名字
      * @param propertyValue 配置属性值
+     * @param isRef 是否被依赖
      */
-    public void addPropertyValue(String propertyName, Object propertyValue){
-        this.propertyValueList.add(new PropertyValue(propertyName, propertyValue));
+    public void addPropertyValue(String type, String propertyName, Object propertyValue, boolean isRef){
+        this.propertyValueList.add(new PropertyValue(type, propertyName, propertyValue, isRef));
     }
 
     /**

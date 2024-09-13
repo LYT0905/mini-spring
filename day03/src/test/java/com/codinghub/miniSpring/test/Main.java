@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws Exception{
         ClassPathXmlApplicationContext classPathXmlApplicationContext =
                 new ClassPathXmlApplicationContext("BeandefinitionXml.xml");
-        BeanDefinitionServiceImplTest beanDefinitionServiceImplTest = (BeanDefinitionServiceImplTest) classPathXmlApplicationContext.getBean("test");
-        beanDefinitionServiceImplTest.print();
+        AServiceImpl aservice =(AServiceImpl) classPathXmlApplicationContext.getBean("aservice");
+        aservice.print();
     }
 }

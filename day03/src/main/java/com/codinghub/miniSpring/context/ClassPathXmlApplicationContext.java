@@ -12,15 +12,22 @@ import com.codinghub.miniSpring.core.Resources;
  * @Description: 路径下的Xml文件解析上下文
  * @Date: 2024/09/09 15:32:01
  */
-public class ClassPathXmlApplicationContext implements BeanFactory {
+public class ClassPathXmlApplicationContext implements BeanFactory, ApplicationEventPublisher {
     SimpleBeanFactory beanFactory;
 
-    public ClassPathXmlApplicationContext(String fileName){
+    public ClassPathXmlApplicationContext(String fileName) {
+        this(fileName, true);
+    }
+
+    public ClassPathXmlApplicationContext(String fileName, boolean isRefresh){
         Resources resources = new ClassPathXmlResource(fileName);
         SimpleBeanFactory simpleBeanFactory = new SimpleBeanFactory();
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(simpleBeanFactory);
         xmlBeanDefinitionReader.loadBeanDefinitions(resources);
         this.beanFactory = simpleBeanFactory;
+        if (isRefresh){
+            this.beanFactory.refresh();
+        }
     }
 
     /**
@@ -50,4 +57,8 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
         return this.beanFactory.getType(name);
     }
 
+    @Override
+    public void publishEvent(ApplicationEvent event) {
+
+    }
 }
