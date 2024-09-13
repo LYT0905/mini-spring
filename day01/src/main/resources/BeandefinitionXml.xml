@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans>
-    <bean id="test" className="com.codinghub.miniSpring.test.com.codinghub.miniSpring.test.BeanDefinitionServiceImplTest"></bean>
+    <bean id="test" className="com.codinghub.miniSpring.test.com.codinghub.miniSpring.com.codinghub.miniSpring.test.BeanDefinitionServiceImplTest"></bean>
 </beans>
