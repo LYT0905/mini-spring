@@ -6,6 +6,31 @@ public class AServiceImpl implements AService {
     private String property1;
     private String property2;
     private BaseService ref1;
+
+    public AServiceImpl(String name, int level, String property1, String property2, BaseService ref1) {
+        this.name = name;
+        this.level = level;
+        this.property1 = property1;
+        this.property2 = property2;
+        this.ref1 = ref1;
+    }
+
+    public AServiceImpl(String name, int level) {
+        this.name = name;
+        this.level = level;
+    }
+
+    public AServiceImpl( int level) {
+        this.level = level;
+    }
+
+    public AServiceImpl(String name) {
+        this.name = name;
+    }
+
+    public AServiceImpl() {
+    }
+
     public String getName() {
         return name;
     }
@@ -47,7 +72,7 @@ public class AServiceImpl implements AService {
     }
 
     @Override
-    public void print() {
+    public void sayHello() {
         System.out.println("IoC Successfully");
     }
 }

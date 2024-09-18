@@ -39,7 +39,7 @@ public class BeanDefinition {
     /**
      * 以构造器方式注入的实体对象
      */
-    private ArgumentValues constructorArgumentsValue;
+    private ConstructorArgumentValues constructorArgumentsValue;
 
     /**
      * 以setter方式注入的实体对象
@@ -101,11 +101,11 @@ public class BeanDefinition {
         this.dependsOn = dependsOn;
     }
 
-    public ArgumentValues getConstructorArgumentsValue() {
+    public ConstructorArgumentValues getConstructorArgumentsValues() {
         return constructorArgumentsValue;
     }
 
-    public void setConstructorArgumentsValue(ArgumentValues constructorArgumentsValue) {
+    public void setConstructorArgumentsValue(ConstructorArgumentValues constructorArgumentsValue) {
         this.constructorArgumentsValue = constructorArgumentsValue;
     }
 

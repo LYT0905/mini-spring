@@ -1,6 +1,6 @@
 package com.codinghub.miniSpring.beans.factory;
 
-import com.codinghub.miniSpring.common.exception.BeanException;
+import com.codinghub.miniSpring.common.exception.BeansException;
 
 /**
  * @author 莱特0905
@@ -13,7 +13,7 @@ public interface BeanFactory {
      * @param beanName Bean实例名字
      * @return Bean实例
      */
-    Object getBean(String beanName) throws BeanException;
+    Object getBean(String beanName) throws BeansException;
 
     /**
      * 根据Bean名字判断是否存在Bean实例

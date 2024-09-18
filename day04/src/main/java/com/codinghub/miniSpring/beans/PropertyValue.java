@@ -29,7 +29,7 @@ public class PropertyValue {
         return value;
     }
 
-    public boolean isRef() {
+    public boolean getIsRef() {
         return isRef;
     }
 }

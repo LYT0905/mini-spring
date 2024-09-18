@@ -11,7 +11,7 @@ public interface SingletonBeanRegistry {
      * @param beanName Bean名字
      * @param singletonObject 单例Bean信息
      */
-    void registrySingleton(String beanName, Object singletonObject);
+    void registerSingleton(String beanName, Object singletonObject);
 
     /**
      * 获取单例Bean

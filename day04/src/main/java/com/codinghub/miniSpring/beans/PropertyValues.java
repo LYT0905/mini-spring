@@ -12,7 +12,7 @@ public class PropertyValues {
     private final List<PropertyValue> propertyValueList;
 
     public PropertyValues(){
-        this.propertyValueList = new ArrayList<>(0);
+        this.propertyValueList = new ArrayList<>(10);
     }
 
     /**

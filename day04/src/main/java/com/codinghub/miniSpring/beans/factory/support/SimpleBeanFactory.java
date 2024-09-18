@@ -1,14 +1,12 @@
-package com.codinghub.miniSpring.beans.factory.impl;
+package com.codinghub.miniSpring.beans.factory.support;
 
 import com.codinghub.miniSpring.beans.PropertyValue;
 import com.codinghub.miniSpring.beans.PropertyValues;
 import com.codinghub.miniSpring.beans.factory.BeanFactory;
-import com.codinghub.miniSpring.beans.factory.config.ArgumentValue;
-import com.codinghub.miniSpring.beans.factory.config.ArgumentValues;
+import com.codinghub.miniSpring.beans.factory.config.ConstructorArgumentValue;
+import com.codinghub.miniSpring.beans.factory.config.ConstructorArgumentValues;
 import com.codinghub.miniSpring.beans.factory.config.BeanDefinition;
-import com.codinghub.miniSpring.beans.factory.support.BeanDefinitionRegistry;
-import com.codinghub.miniSpring.beans.factory.support.DefaultSingletonBeanRegistry;
-import com.codinghub.miniSpring.common.exception.BeanException;
+import com.codinghub.miniSpring.common.exception.BeansException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -35,7 +33,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
      * @return Bean实例对象
      */
     @Override
-    public Object getBean(String beanName) throws BeanException {
+    public Object getBean(String beanName) throws BeansException {
         // 先尝试直接拿Bean实例
         Object singleton = this.singletons.get(beanName);
         // //如果此时还没有这个bean的实例，则获取它的定义来创建实例
@@ -50,14 +48,14 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 // step 4: postProcessAfterInitialization
                 BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
                 if (beanDefinition == null){
-                    throw new BeanException("get singleton failed,the singleton is not exist");
+                    throw new BeansException("get singleton failed,the singleton is not exist");
                 }
                 try {
                     singleton = Class.forName(beanDefinition.getClassName()).newInstance();
                 }catch (Throwable ex){
-                    throw new BeanException("create singleton:" + beanName + " failed");
+                    throw new BeansException("create singleton:" + beanName + " failed");
                 }
-                this.registrySingleton(beanName, singleton);
+                this.registerSingleton(beanName, singleton);
             }
         }
         return singleton;
@@ -93,28 +91,28 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         try {
             clz = Class.forName(bd.getClassName());
             // 处理构造器参数
-            ArgumentValues argumentValues = bd.getConstructorArgumentsValue();
+            ConstructorArgumentValues constructorArgumentValues = bd.getConstructorArgumentsValues();
             // 如果有参数
-            if (!argumentValues.isEmpty()){
+            if (!constructorArgumentValues.isEmpty()){
                 // 参数类型
-                Class<?>[] paramTypes = new Class<?>[argumentValues.getArgumentCount()];
+                Class<?>[] paramTypes = new Class<?>[constructorArgumentValues.getArgumentCount()];
                 // 参数值
-                Object[] paramValues = new Object[argumentValues.getArgumentCount()];
+                Object[] paramValues = new Object[constructorArgumentValues.getArgumentCount()];
                 // 对每一个参数，分数据类型分别处理
-                for (int i = 0; i < argumentValues.getArgumentCount(); i++) {
-                    ArgumentValue argumentValue = argumentValues.getIndexedArgumentValue(i);
-                    if ("String".equals(argumentValue.getType()) || "java.lang.String".equals(argumentValue.getType())){
+                for (int i = 0; i < constructorArgumentValues.getArgumentCount(); i++) {
+                    ConstructorArgumentValue constructorArgumentValue = constructorArgumentValues.getIndexedArgumentValue(i);
+                    if ("String".equals(constructorArgumentValue.getType()) || "java.lang.String".equals(constructorArgumentValue.getType())){
                         paramTypes[i] = String.class;
-                        paramValues[i] = argumentValue.getValue();
-                    } else if ("Integer".equals(argumentValue.getType()) || "java.lang.Integer".equals(argumentValue.getType())) {
+                        paramValues[i] = constructorArgumentValue.getValue();
+                    } else if ("Integer".equals(constructorArgumentValue.getType()) || "java.lang.Integer".equals(constructorArgumentValue.getType())) {
                         paramTypes[i] = Integer.class;
-                        paramValues[i] = Integer.valueOf((String) argumentValue.getValue());
-                    } else if ("int".equals(argumentValue.getType())) {
+                        paramValues[i] = Integer.valueOf((String) constructorArgumentValue.getValue());
+                    } else if ("int".equals(constructorArgumentValue.getType())) {
                         paramTypes[i] = int.class;
-                        paramValues[i] = Integer.valueOf((String) argumentValue.getValue());
+                        paramValues[i] = Integer.valueOf((String) constructorArgumentValue.getValue());
                     }else { // 默认为string
                         paramTypes[i] = String.class;
-                        paramValues[i] = argumentValue.getValue();
+                        paramValues[i] = constructorArgumentValue.getValue();
                     }
                 }
                 try {
@@ -151,7 +149,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
                 String pType = propertyValue.getType();
                 String pName = propertyValue.getName();
                 Object pValue = propertyValue.getValue();
-                boolean isRef = propertyValue.isRef();
+                boolean isRef = propertyValue.getIsRef();
                 Object[] paramValues = new Object[1];
                 Class<?>[] paramTypes = new Class<?>[1];
                 if (!isRef){ // 如果不是ref，
@@ -200,7 +198,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         for (String beanDefinitionName : beanDefinitionNames) {
             try {
                 getBean(beanDefinitionName);
-            } catch (BeanException e) {
+            } catch (BeansException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -246,7 +244,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         if (!bd.isLazyInit()){
             try {
                 getBean(name);
-            }catch (BeanException e){
+            }catch (BeansException e){
             }
         }
     }
