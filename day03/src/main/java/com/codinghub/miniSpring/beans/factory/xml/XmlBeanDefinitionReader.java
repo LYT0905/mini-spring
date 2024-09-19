@@ -50,7 +50,7 @@ public class XmlBeanDefinitionReader {
                     pV = pRef;
                     refs.add(pRef);
                 }
-                PVS.addPropertyValue(new PropertyValue(type, name, value, isRef));
+                PVS.addPropertyValue(new PropertyValue(type, name, pV, isRef));
             }
             beanDefinition.setPropertyValues(PVS);
 
