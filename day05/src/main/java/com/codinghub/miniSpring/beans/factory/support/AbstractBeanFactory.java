@@ -87,6 +87,7 @@ public abstract class AbstractBeanFactory
         Method method = null;
         try {
             method = clz.getMethod(beanDefinition.getInitMethodName());
+            System.out.println("init method " + method.getName());
         }catch (Exception ex){
             ex.printStackTrace();
         }

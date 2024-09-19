@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-	<bean id="basebaseservice" class="com.minis.test.BaseBaseService"> 
+	<bean id="basebaseservice" class="com.minis.test.BaseBaseService" init-method = "CService">
 	    <property type="com.minis.test.AServiceImpl" name="as" ref="aservice"/>
 	</bean>
 	<bean id="aservice" class="com.minis.test.AServiceImpl"> 

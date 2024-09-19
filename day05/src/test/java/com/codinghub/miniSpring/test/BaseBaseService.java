@@ -17,4 +17,8 @@ public class BaseBaseService {
 		System.out.println("Base Base Service says hello");
 
 	}
+
+	public void sayGoodBye(){
+		System.out.println("Base Base Service says goodBye!");
+	}
 }

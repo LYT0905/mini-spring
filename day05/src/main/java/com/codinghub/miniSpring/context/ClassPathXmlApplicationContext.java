@@ -22,9 +22,6 @@ import java.util.List;
 public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
     DefaultListableBeanFactory beanFactory;
 
-    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors =
-            new ArrayList<BeanFactoryPostProcessor>();
-
     public ClassPathXmlApplicationContext(String fileName) {
         this(fileName, true);
     }
