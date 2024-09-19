@@ -4,6 +4,7 @@ import com.codinghub.miniSpring.beans.PropertyValue;
 import com.codinghub.miniSpring.beans.PropertyValues;
 import com.codinghub.miniSpring.beans.factory.BeanFactory;
 import com.codinghub.miniSpring.beans.factory.config.BeanDefinition;
+import com.codinghub.miniSpring.beans.factory.config.ConfigurableBeanFactory;
 import com.codinghub.miniSpring.beans.factory.config.ConstructorArgumentValue;
 import com.codinghub.miniSpring.beans.factory.config.ConstructorArgumentValues;
 import com.codinghub.miniSpring.common.exception.BeansException;
@@ -16,9 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
-    private Map< String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap< >(256);
-    private List< String > beanDefinitionNames = new ArrayList< >();
+public abstract class AbstractBeanFactory
+        extends DefaultSingletonBeanRegistry
+        implements ConfigurableBeanFactory,BeanDefinitionRegistry {
+    protected Map< String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap< >(256);
+    protected List< String > beanDefinitionNames = new ArrayList< >();
     private final Map < String, Object > earlySingletonObjects = new HashMap< >(16);
     public AbstractBeanFactory() {}
 

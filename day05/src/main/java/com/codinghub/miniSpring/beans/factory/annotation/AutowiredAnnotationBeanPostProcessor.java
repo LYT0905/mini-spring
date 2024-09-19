@@ -1,5 +1,6 @@
 package com.codinghub.miniSpring.beans.factory.annotation;
 
+import com.codinghub.miniSpring.beans.factory.BeanFactory;
 import com.codinghub.miniSpring.beans.factory.config.AutowireCapableBeanFactory;
 import com.codinghub.miniSpring.beans.factory.config.BeanPostProcessor;
 import com.codinghub.miniSpring.common.exception.BeansException;
@@ -12,7 +13,7 @@ import java.lang.reflect.Field;
  * @Date: 2024/09/13 20:31:56
  */
 public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
-    private AutowireCapableBeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
     /**
      * Bean初始化之前执行的动作
@@ -24,7 +25,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessorBeforeInitialization(Object bean, String beanName) throws BeansException {
         Object result = bean;
-        Class<?> clazz = result.getClass();
+        Class<?> clazz = bean.getClass();
         Field[] fields = clazz.getDeclaredFields();
         if (fields != null){
             // 对每一个属性进行判断，如果带有@Autowired注解则进行处理
@@ -60,11 +61,12 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
         return null;
     }
 
-    public AutowireCapableBeanFactory getBeanFactory(){
-        return beanFactory;
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
-    public void setBeanFactory(AutowireCapableBeanFactory beanFactory){
-        this.beanFactory = beanFactory;
+    public BeanFactory getBeanFactory(){
+        return beanFactory;
     }
 }

@@ -1,5 +1,6 @@
 package com.codinghub.miniSpring.beans.factory.config;
 
+import com.codinghub.miniSpring.beans.factory.BeanFactory;
 import com.codinghub.miniSpring.common.exception.BeansException;
 
 /**
@@ -25,4 +26,10 @@ public interface BeanPostProcessor {
      * @throws BeansException 自定义异常
      */
     Object postProcessorAfterInitialization(Object bean, String beanName) throws BeansException;
+
+    /**
+     * 设置Bean工厂
+     * @param beanFactory Bean工厂
+     */
+    void setBeanFactory(BeanFactory beanFactory);
 }

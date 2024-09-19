@@ -35,7 +35,7 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
     @Override
     public Object getBean(String beanName) throws BeansException {
         // 先尝试直接拿Bean实例
-        Object singleton = this.singletons.get(beanName);
+        Object singleton = this.singletonObjects.get(beanName);
         // //如果此时还没有这个bean的实例，则获取它的定义来创建实例
         if (singleton == null){
             // 如果没有实例，则尝试从毛胚实例中获取

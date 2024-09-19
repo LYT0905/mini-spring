@@ -11,4 +11,10 @@ public interface ApplicationEventPublisher {
      * @param event 事件
      */
     void publishEvent(ApplicationEvent event);
+
+    /**
+     * 添加应用监听
+     * @param listener 监听
+     */
+    void addApplicationListener(ApplicationListener listener);
 }
