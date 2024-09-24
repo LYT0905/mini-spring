@@ -59,11 +59,17 @@ public class DispatcherServlet extends HttpServlet {
         Refresh();
     }
 
+    /**
+     * 刷新动作
+     */
     protected void Refresh(){
         initController();
         initMapping();
     }
 
+    /**
+     * 初始化控制层
+     */
     protected void initController(){
         this.controllerNames = scanPackages(this.packageNames);
 
@@ -72,6 +78,10 @@ public class DispatcherServlet extends HttpServlet {
             Class<?> clz = null;
             try {
                 clz = Class.forName(controllerName);
+                boolean isInterface = clz.isInterface();
+                if (isInterface){
+                    continue;
+                }
                 this.controllerClasses.put(controllerName, clz);
             }catch (ClassNotFoundException ex){
                 ex.printStackTrace();
@@ -87,6 +97,12 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
+
+    /**
+     * 扫描定义的包
+     * @param packages 定义的包
+     * @return 包下面的所有文件
+     */
     private List<String> scanPackages(List<String> packages){
         List<String> tempControllerNames = new ArrayList<>();
         for (String packageName : packages) {
@@ -95,6 +111,11 @@ public class DispatcherServlet extends HttpServlet {
         return tempControllerNames;
     }
 
+    /**
+     * 扫描单个包
+     * @param packageName 包名
+     * @return 包下面的所有文件
+     */
     private List<String> scanPackage(String packageName){
         List<String> tempControllerNames = new ArrayList<>();
         URL url = this.getClass().getClassLoader().getResource( packageName.replaceAll("\\.", "/"));
@@ -110,9 +131,15 @@ public class DispatcherServlet extends HttpServlet {
         return tempControllerNames;
     }
 
+    /**
+     * 初始化Mapping
+     */
     protected void initMapping(){
         for (String controllerName : this.controllerNames) {
             Class<?> clazz = this.controllerClasses.get(controllerName);
+            if (clazz == null){
+                continue;
+            }
             Object obj = this.controllerObjs.get(controllerName);
             Method[] methods = clazz.getDeclaredMethods();
             if (methods != null){

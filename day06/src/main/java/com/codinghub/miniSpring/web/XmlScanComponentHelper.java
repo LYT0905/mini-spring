@@ -16,6 +16,11 @@ import java.util.List;
  * @Date: 2024/09/23 20:24:56
  */
 public class XmlScanComponentHelper {
+    /**
+     * 获取定义节点的值
+     * @param xmlPath 绝对地址
+     * @return 节点的值
+     */
     public static List<String> getNodeValue(URL xmlPath){
         List<String> packages = new ArrayList<>();
         SAXReader saxReader = new SAXReader();
