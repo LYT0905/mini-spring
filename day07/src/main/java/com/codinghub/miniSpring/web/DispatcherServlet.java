@@ -1,6 +1,7 @@
 package com.codinghub.miniSpring.web;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,8 @@ import java.util.Map;
  * @Date: 2024/09/23 18:10:13
  */
 public class DispatcherServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private WebApplicationContext webApplicationContext;
     private String sContextConfigLocation;
     // 存放需要扫描的包名
     private List<String> packageNames = new ArrayList<>();
@@ -45,6 +48,8 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException{
         super.init(config);
+
+        this.webApplicationContext = (WebApplicationContext) this.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 
         sContextConfigLocation = config.getInitParameter("contextConfigLocation");
 
@@ -160,7 +165,6 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String servletPath = request.getServletPath();
-        System.out.println(servletPath);
         if (!this.urlMappingNames.contains(servletPath)){
             return;
         }
@@ -170,14 +174,8 @@ public class DispatcherServlet extends HttpServlet {
             Method method = this.mappingMethods.get(servletPath);
             obj = this.mappingObjs.get(servletPath);
             objResult = method.invoke(obj);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception ex){
+            ex.printStackTrace();
         }
         response.getWriter().append(objResult.toString());
     }
