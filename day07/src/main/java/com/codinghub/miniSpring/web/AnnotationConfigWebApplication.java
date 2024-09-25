@@ -6,7 +6,7 @@ import javax.servlet.ServletContext;
 
 /**
  * @author 莱特0905
- * @Description:
+ * @Description: 注解配置的应用程序
  * @Date: 2024/09/25 19:16:43
  */
 public class AnnotationConfigWebApplication extends ClassPathXmlApplicationContext implements WebApplicationContext {

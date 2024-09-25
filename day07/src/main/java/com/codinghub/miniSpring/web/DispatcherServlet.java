@@ -1,5 +1,8 @@
 package com.codinghub.miniSpring.web;
 
+import com.codinghub.miniSpring.beans.BeansException;
+import com.codinghub.miniSpring.beans.factory.annotation.Autowired;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -8,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -93,13 +97,50 @@ public class DispatcherServlet extends HttpServlet {
             }
             try {
                 obj = clz.newInstance();
+
+                populateBean(obj, controllerName);
+
                 this.controllerObjs.put(controllerName, obj);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
+            }catch (BeansException e){
+                e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 处理Bean对象，进行自动注入
+     * @param bean Bean对象
+     * @param beanName Bean名字
+     * @return Bean
+     * @throws BeansException 自定义异常
+     */
+    protected  Object populateBean(Object bean, String beanName) throws BeansException{
+        Object result = bean;
+
+        Class<?> clazz = bean.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        if (fields != null){
+            for (Field field : fields) {
+                boolean isAutowired = field.isAnnotationPresent(Autowired.class);
+                if (isAutowired){
+                    String fieldName = field.getName();
+                    Object autowiredObj = this.webApplicationContext.getBean(fieldName);
+                    try {
+                        field.setAccessible(true);
+                        field.set(bean, autowiredObj);
+                    }catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 
