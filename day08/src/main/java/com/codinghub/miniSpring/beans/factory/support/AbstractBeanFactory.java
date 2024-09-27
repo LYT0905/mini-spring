@@ -10,6 +10,7 @@ import com.codinghub.miniSpring.beans.factory.config.ConstructorArgumentValues;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -265,6 +266,10 @@ public abstract class AbstractBeanFactory
                     obj = clz.newInstance();
                 }
             }else {
+                if (clz.isInterface()) {
+                    System.err.println("Cannot instantiate an interface: " + clz.getName());
+                    return null; // 或者抛出自定义异常
+                }
                 obj = clz.newInstance();
             }
         }catch (Exception ex){
@@ -299,58 +304,60 @@ public abstract class AbstractBeanFactory
                 beanDefinition.getId());
         PropertyValues propertyValues = beanDefinition.getPropertyValues();
         //如果有属性
-        if (!propertyValues.isEmpty()) {
-            for (int i = 0; i < propertyValues.size(); i++) {
-                PropertyValue propertyValue =
-                        propertyValues.getPropertyValueList().get(i);
-                String pType = propertyValue.getType();
-                String pName = propertyValue.getName();
-                Object pValue = propertyValue.getValue();
-                boolean isRef = propertyValue.getIsRef();
-                Class < ? > [] paramTypes = new Class < ? > [1];
-                Object[] paramValues = new Object[1];
-                if (!isRef) { //如果不是ref，只是普通属性
-                    //对每一个属性，分数据类型分别处理
-                    if ("String".equals(pType) ||
-                            "java.lang.String".equals(pType)) {
-                        paramTypes[0] = String.class;
-                        paramValues[0] = pValue;
-                    } else if ("Integer".equals(pType) ||
-                            "java.lang.Integer".equals(pType)) {
-                        paramTypes[i] = Integer.class;
-                        paramValues[0] = Integer.valueOf((String) pValue);
-                    } else if ("int".equals(pType)) {
-                        paramTypes[i] = int.class;
-                        paramValues[0] = Integer.valueOf((String) pValue).intValue();
-                    } else {
-                        paramTypes[i] = String.class;
-                        paramValues[0] = pValue;
+        if (propertyValues != null){
+            if (!propertyValues.isEmpty()) {
+                for (int i = 0; i < propertyValues.size(); i++) {
+                    PropertyValue propertyValue =
+                            propertyValues.getPropertyValueList().get(i);
+                    String pType = propertyValue.getType();
+                    String pName = propertyValue.getName();
+                    Object pValue = propertyValue.getValue();
+                    boolean isRef = propertyValue.getIsRef();
+                    Class < ? > [] paramTypes = new Class < ? > [1];
+                    Object[] paramValues = new Object[1];
+                    if (!isRef) { //如果不是ref，只是普通属性
+                        //对每一个属性，分数据类型分别处理
+                        if ("String".equals(pType) ||
+                                "java.lang.String".equals(pType)) {
+                            paramTypes[0] = String.class;
+                            paramValues[0] = pValue;
+                        } else if ("Integer".equals(pType) ||
+                                "java.lang.Integer".equals(pType)) {
+                            paramTypes[i] = Integer.class;
+                            paramValues[0] = Integer.valueOf((String) pValue);
+                        } else if ("int".equals(pType)) {
+                            paramTypes[i] = int.class;
+                            paramValues[0] = Integer.valueOf((String) pValue).intValue();
+                        } else {
+                            paramTypes[i] = String.class;
+                            paramValues[0] = pValue;
+                        }
+                    } else { //is ref, create the dependent beans
+                        try {
+                            paramTypes[0] = Class.forName(pType);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                        try { //再次调用getBean创建ref的bean实例
+                            paramValues[0] = getBean((String) pValue);
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
-                } else { //is ref, create the dependent beans
+                    //按照setXxxx规范查找setter方法，调用setter方法设置属性
+                    String methodName = "set" + pName.substring(0, 1).toUpperCase() +
+                            pName.substring(1);
+                    Method method = null;
                     try {
-                        paramTypes[0] = Class.forName(pType);
+                        method = clz.getMethod(methodName, paramTypes);
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }
-                    try { //再次调用getBean创建ref的bean实例
-                        paramValues[0] = getBean((String) pValue);
+                    try {
+                        method.invoke(obj, paramValues);
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }
-                }
-                //按照setXxxx规范查找setter方法，调用setter方法设置属性
-                String methodName = "set" + pName.substring(0, 1).toUpperCase() +
-                        pName.substring(1);
-                Method method = null;
-                try {
-                    method = clz.getMethod(methodName, paramTypes);
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
-                try {
-                    method.invoke(obj, paramValues);
-                }catch (Exception ex){
-                    ex.printStackTrace();
                 }
             }
         }

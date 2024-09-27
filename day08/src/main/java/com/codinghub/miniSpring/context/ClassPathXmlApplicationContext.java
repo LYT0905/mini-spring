@@ -36,50 +36,83 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
         }
     }
 
+    /**
+     * 注册监听者
+     */
     @Override
-    void registerListeners() {
+    public void registerListeners() {
         ApplicationListener listener = new ApplicationListener();
         this.getApplicationEventPublisher().addApplicationListener(listener);
 
     }
 
+    /**
+     * 初始化应用事件推送者
+     */
     @Override
-    void initApplicationEventPublisher() {
+    public void initApplicationEventPublisher() {
         ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
         this.setApplicationEventPublisher(aep);
     }
 
+    /**
+     * Bean工厂后置处理器
+     * @param bf 可配置的可列表Bean工厂
+     */
     @Override
-    void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
     }
 
+    /**
+     * 注册Bean工厂后置处理器
+     * @param bf 可配置的可列表Bean工厂
+     */
     @Override
-    void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
+    public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
         this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
     }
 
+    /**
+     * 正在刷新
+     */
     @Override
-    void onRefresh() {
+    public void onRefresh() {
         this.beanFactory.refresh();
     }
 
+    /**
+     * 获取Bean工厂
+     * @return Bean工厂
+     * @throws IllegalStateException 非法状态错误
+     */
     @Override
     public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
         return this.beanFactory;
     }
 
+    /**
+     * 添加应用监听
+     * @param listener 监听
+     */
     @Override
     public void addApplicationListener(ApplicationListener listener) {
         this.getApplicationEventPublisher().addApplicationListener(listener);
 
     }
 
+    /**
+     * 完成刷新
+     */
     @Override
-    void finishRefresh() {
+    public void finishRefresh() {
         publishEvent(new ContextRefreshEvent("Context Refreshed..."));
 
     }
 
+    /**
+     * 发布事件
+     * @param event 事件
+     */
     @Override
     public void publishEvent(ApplicationEvent event) {
         this.getApplicationEventPublisher().publishEvent(event);

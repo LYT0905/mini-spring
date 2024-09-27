@@ -22,7 +22,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {
-        synchronized (this.singletonObjects){
+        synchronized (this.singletonObjects) {
             Object oldObject = this.singletonObjects.get(beanName);
             if (oldObject != null) {
                 throw new IllegalStateException("Could not register object [" + singletonObject +

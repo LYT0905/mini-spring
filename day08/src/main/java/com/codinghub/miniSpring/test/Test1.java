@@ -4,6 +4,7 @@ package com.codinghub.miniSpring.test;
 
 import com.codinghub.miniSpring.beans.BeansException;
 import com.codinghub.miniSpring.context.ClassPathXmlApplicationContext;
+import com.codinghub.miniSpring.test.service.BaseService;
 
 public class Test1 {
 

@@ -1,4 +1,4 @@
-package com.codinghub.miniSpring.test;
+package com.codinghub.miniSpring.test.service;
 
 /**
  * @author 莱特0905

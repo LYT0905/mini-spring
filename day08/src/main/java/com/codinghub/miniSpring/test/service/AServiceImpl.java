@@ -1,4 +1,4 @@
-package com.codinghub.miniSpring.test;
+package com.codinghub.miniSpring.test.service;
 
 public class AServiceImpl implements AService {
 	private String name;

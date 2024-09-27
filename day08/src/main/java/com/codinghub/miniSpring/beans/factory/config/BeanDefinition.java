@@ -102,7 +102,7 @@ public class BeanDefinition {
     }
 
     public ConstructorArgumentValues getConstructorArgumentsValues() {
-        return constructorArgumentsValue;
+        return constructorArgumentsValue == null ? null : constructorArgumentsValue;
     }
 
     public void setConstructorArgumentsValue(ConstructorArgumentValues constructorArgumentsValue) {

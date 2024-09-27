@@ -318,32 +318,32 @@ public abstract class AbstractApplicationContext implements ApplicationContext{
     /**
      * 注册监听者
      */
-    abstract void registerListeners();
+    public abstract void registerListeners();
 
     /**
      * 初始化应用事件推送者
      */
-    abstract void initApplicationEventPublisher();
+    public abstract void initApplicationEventPublisher();
 
     /**
      * Bean工厂后置处理器
      * @param bf 可配置的可列表Bean工厂
      */
-    abstract void postProcessBeanFactory(ConfigurableListableBeanFactory bf);
+    public abstract void postProcessBeanFactory(ConfigurableListableBeanFactory bf);
 
     /**
      * 注册Bean工厂后置处理器
      * @param bf 可配置的可列表Bean工厂
      */
-    abstract void registerBeanPostProcessors(ConfigurableListableBeanFactory bf);
+    public abstract void registerBeanPostProcessors(ConfigurableListableBeanFactory bf);
 
     /**
      * 正在刷新
      */
-    abstract void onRefresh();
+    public abstract void onRefresh();
 
     /**
      * 完成刷新
      */
-    abstract void finishRefresh();
+    public abstract void finishRefresh();
 }

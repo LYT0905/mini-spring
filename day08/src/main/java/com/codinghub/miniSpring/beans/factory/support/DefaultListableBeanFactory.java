@@ -18,6 +18,9 @@ import java.util.Map;
 public class DefaultListableBeanFactory
         extends AbstractAutowireCapableBeanFactory
         implements ConfigurableListableBeanFactory {
+
+    ConfigurableListableBeanFactory parentBeanFactory;
+
     /**
      * 获取Bean的数量
      * @return Bean的数量
@@ -33,7 +36,7 @@ public class DefaultListableBeanFactory
      */
     @Override
     public String[] getBeanDefinitionNames() {
-        return (String[]) this.beanDefinitionNames.toArray();
+        return this.beanDefinitionNames.toArray(new String[0]);
     }
 
     /**
@@ -69,6 +72,23 @@ public class DefaultListableBeanFactory
         for (String beanName : beanNames) {
             Object beanInstance = getBean(beanName);
             result.put(beanName, (T) beanInstance);
+        }
+        return result;
+    }
+
+    /**
+     * 设置父级Bean工厂
+     * @param beanFactory 父级Bean工厂
+     */
+    public void setParent(ConfigurableListableBeanFactory beanFactory){
+        this.parentBeanFactory = beanFactory;
+    }
+
+    @Override
+    public Object getBean(String beanName) throws BeansException {
+        Object result = super.getBean(beanName);
+        if (result == null){
+            result = this.parentBeanFactory.getBean(beanName);
         }
         return result;
     }

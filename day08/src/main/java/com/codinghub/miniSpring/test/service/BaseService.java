@@ -1,4 +1,4 @@
-package com.codinghub.miniSpring.test;
+package com.codinghub.miniSpring.test.service;
 
 
 import com.codinghub.miniSpring.beans.factory.annotation.Autowired;
