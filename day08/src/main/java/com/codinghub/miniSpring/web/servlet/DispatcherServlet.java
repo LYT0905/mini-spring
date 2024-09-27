@@ -94,10 +94,6 @@ public class DispatcherServlet extends HttpServlet {
             Class<?> clz = null;
             try {
                 clz = Class.forName(controllerName);
-                boolean isInterface = clz.isInterface();
-                if (isInterface){
-                    continue;
-                }
                 this.controllerClasses.put(controllerName, clz);
                 this.controllerObjs.put(controllerName, this.webApplicationContext.getBean(controllerName));
                 System.out.println("controller : "+controllerName);
