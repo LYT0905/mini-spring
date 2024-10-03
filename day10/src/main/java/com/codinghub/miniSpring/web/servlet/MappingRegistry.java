@@ -18,6 +18,10 @@ public class MappingRegistry {
     private Map<String,Object> mappingObjs = new HashMap<>();
     // 保存URL名称与方法的映射关系
     private Map<String,Method> mappingMethods = new HashMap<>();
+    // 映射方法名字
+    private Map<String,String> mappingMethodNames = new HashMap<>();
+    // 映射类
+    private Map<String,Class<?>> mappingClasses = new HashMap<>();
 
     public List<String> getUrlMappingNames() {
         return urlMappingNames;
@@ -36,6 +40,18 @@ public class MappingRegistry {
     }
     public void setMappingMethods(Map<String,Method> mappingMethods) {
         this.mappingMethods = mappingMethods;
+    }
+    public Map<String,Class<?>> getMappingClasses() {
+        return mappingClasses;
+    }
+    public void setMappingClasses(Map<String,Class<?>> mappingClasses) {
+        this.mappingClasses = mappingClasses;
+    }
+    public Map<String,String> getMappingMethodNames() {
+        return mappingMethodNames;
+    }
+    public void setMappingMethodNames(Map<String,String> mappingMethodNames) {
+        this.mappingMethodNames = mappingMethodNames;
     }
 
 }

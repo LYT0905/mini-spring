@@ -1,7 +1,9 @@
 package com.codinghub.miniSpring.web.servlet;
 
-import com.codinghub.miniSpring.beans.BeansException;
-import com.codinghub.miniSpring.web.WebApplicationContext;
+import com.codinghub.miniSpring.context.ApplicationContext;
+import com.codinghub.miniSpring.context.ApplicationContextAware;
+import com.codinghub.miniSpring.http.converter.HttpMessageConverter;
+import com.codinghub.miniSpring.web.ResponseBody;
 import com.codinghub.miniSpring.web.WebBindingInitializer;
 import com.codinghub.miniSpring.web.WebDataBinder;
 import com.codinghub.miniSpring.web.WebDataBinderFactory;
@@ -16,23 +18,18 @@ import java.lang.reflect.Parameter;
  * @Description: 请求处理适配器
  * @Date: 2024/09/26 17:55:28
  */
-public class RequestMappingHandlerAdapter implements HandlerAdapter{
-    WebApplicationContext wac = null;
+public class RequestMappingHandlerAdapter implements HandlerAdapter, ApplicationContextAware {
+    private ApplicationContext applicationContext= null;
     private WebBindingInitializer webBindingInitializer = null;
+    private HttpMessageConverter messageConverter = null;
 
-    public RequestMappingHandlerAdapter(WebApplicationContext wac) {
-        this.wac = wac;
-        try {
-            this.webBindingInitializer = (WebBindingInitializer) this.wac.getBean("webBindingInitializer");
-        } catch (BeansException e) {
-            e.printStackTrace();
-        }
+    public RequestMappingHandlerAdapter() {
     }
 
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        handleInternal(request, response, (HandlerMethod) handler);
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        return handleInternal(request, response, (HandlerMethod) handler);
     }
 
     /**
@@ -46,7 +43,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter{
         ModelAndView mv = null;
 
         try {
-            invokeHandlerMethod(request, response, handler);
+            mv = invokeHandlerMethod(request, response, handler);
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -59,7 +56,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter{
      * @param response 响应
      * @param handlerMethod 处理方法
      */
-    protected void invokeHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
+    protected ModelAndView invokeHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
         WebDataBinderFactory binderFactory = new WebDataBinderFactory();
         // 获取方法参数
         Parameter[] methodParameters = handlerMethod.getMethod().getParameters();
@@ -67,23 +64,45 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter{
 
         int i = 0;
         for (Parameter methodParameter : methodParameters) {
-            // 创建对应方法参数类型实例
-            Object methodParamObj = methodParameter.getType().newInstance();
-            // 创建Web数据绑定对象
-            WebDataBinder wdb = binderFactory.createBinder(request, methodParamObj, methodParameter.getName());
-            // 初始化绑定对象
-            webBindingInitializer.initBinder(wdb);
-            // 将请求参数与其进行绑定
-            wdb.bind(request);
-            // 将对应方法参数类型实例存入数组
-            methodParamObjs[i] = methodParamObj;
+            if (methodParameter.getType() != HttpServletRequest.class && methodParameter.getType() != HttpServletResponse.class){
+                // 创建对应方法参数类型实例
+                Object methodParamObj = methodParameter.getType().newInstance();
+                // 创建Web数据绑定对象
+                WebDataBinder wdb = binderFactory.createBinder(request, methodParamObj, methodParameter.getName());
+                // 初始化绑定对象
+                webBindingInitializer.initBinder(wdb);
+                // 将请求参数与其进行绑定
+                wdb.bind(request);
+                // 将对应方法参数类型实例存入数组
+                methodParamObjs[i] = methodParamObj;
+            } else if (methodParameter.getType() == HttpServletRequest.class) {
+                methodParamObjs[i] = request;
+            }else if (methodParameter.getType()==HttpServletResponse.class) {
+                methodParamObjs[i] = response;
+            }
             i++;
         }
 
         Method invocableMethod = handlerMethod.getMethod();
-        Object returnobj = invocableMethod.invoke(handlerMethod.getBean(), methodParamObjs);
+        Object returnObj = invocableMethod.invoke(handlerMethod.getBean(), methodParamObjs);
+        Class<?> returnType = invocableMethod.getReturnType();
+        ModelAndView mav = null;
 
-        response.getWriter().append(returnobj.toString());
+        if (invocableMethod.isAnnotationPresent(ResponseBody.class)){
+            this.messageConverter.write(returnObj, response);
+        } else if (returnType == void.class) {
+        }else {
+            if (returnObj instanceof ModelAndView){
+                mav = (ModelAndView) returnObj;
+            }else if(returnObj instanceof String) {
+                String sTarget = (String)returnObj;
+                mav = new ModelAndView();
+                mav.setViewName(sTarget);
+            }
+        }
+
+
+        return mav;
     }
 
     /**
@@ -100,5 +119,21 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter{
      */
     public void setWebBindingInitializer(WebBindingInitializer webBindingInitializer) {
         this.webBindingInitializer = webBindingInitializer;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public HttpMessageConverter getMessageConverter() {
+        return messageConverter;
+    }
+
+    public void setMessageConverter(HttpMessageConverter messageConverter) {
+        this.messageConverter = messageConverter;
     }
 }

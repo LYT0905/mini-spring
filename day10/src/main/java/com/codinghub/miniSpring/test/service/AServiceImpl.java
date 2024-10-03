@@ -22,7 +22,7 @@ public class AServiceImpl implements AService {
 	public void setProperty1(String property1) {
 		this.property1 = property1;
 	}
-	
+
 	public String getProperty2() {
 		return property2;
 	}
@@ -33,10 +33,10 @@ public class AServiceImpl implements AService {
 
 	public AServiceImpl() {
 	}
-	
+
 	public AServiceImpl(String name, int level) {
 		this.name = name;
-		this.level = level;		
+		this.level = level;
 	}
 
 	public void sayHello() {

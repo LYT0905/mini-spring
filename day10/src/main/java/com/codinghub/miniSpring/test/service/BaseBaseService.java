@@ -2,7 +2,7 @@ package com.codinghub.miniSpring.test.service;
 
 public class BaseBaseService {
 	private AServiceImpl as;
-	
+
 	public AServiceImpl getAs() {
 		return as;
 	}
@@ -16,7 +16,7 @@ public class BaseBaseService {
 
 	}
 
-	public void sayGoodBye(){
-		System.out.println("Base Base Service says goodBye!");
+	public void init() {
+		System.out.println("..........call init-mothod..........");
 	}
 }

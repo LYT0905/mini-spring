@@ -1,6 +1,8 @@
 package com.codinghub.miniSpring.web.servlet;
 
 import com.codinghub.miniSpring.beans.BeansException;
+import com.codinghub.miniSpring.context.ApplicationContext;
+import com.codinghub.miniSpring.context.ApplicationContextAware;
 import com.codinghub.miniSpring.web.RequestMapping;
 import com.codinghub.miniSpring.web.WebApplicationContext;
 
@@ -12,14 +14,11 @@ import java.lang.reflect.Method;
  * @Description: 请求映射处理
  * @Date: 2024/09/26 17:48:02
  */
-public class RequestMappingHandlerMapping implements HandlerMapping{
-    WebApplicationContext wac;
-    private final MappingRegistry mappingRegistry = new MappingRegistry();
+public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware {
+    ApplicationContext applicationContext;
+    private MappingRegistry mappingRegistry = null;
 
-    public RequestMappingHandlerMapping(WebApplicationContext wac){
-        this.wac = wac;
-
-        initMapping();
+    public RequestMappingHandlerMapping(){
     }
 
 
@@ -29,7 +28,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping{
     protected void initMapping(){
         Class<?> clz = null;
         Object obj = null;
-        String[] controllerNames = this.wac.getBeanDefinitionNames();
+        String[] controllerNames = this.applicationContext.getBeanDefinitionNames();
         for (String controllerName : controllerNames) {
             try {
                 clz = Class.forName(controllerName);
@@ -40,7 +39,7 @@ public class RequestMappingHandlerMapping implements HandlerMapping{
                 exception.printStackTrace();
             }
             try {
-                obj = this.wac.getBean(controllerName);
+                obj = this.applicationContext.getBean(controllerName);
             }catch (BeansException ex){
                 ex.printStackTrace();
             }
@@ -54,6 +53,8 @@ public class RequestMappingHandlerMapping implements HandlerMapping{
                         this.mappingRegistry.getUrlMappingNames().add(urlmapping);
                         this.mappingRegistry.getMappingObjs().put(urlmapping, obj);
                         this.mappingRegistry.getMappingMethods().put(urlmapping, method);
+                        this.mappingRegistry.getMappingMethodNames().put(urlmapping, methodName);
+                        this.mappingRegistry.getMappingClasses().put(urlmapping, clz);
                     }
                 }
             }
@@ -68,14 +69,29 @@ public class RequestMappingHandlerMapping implements HandlerMapping{
      */
     @Override
     public HandlerMethod getHandler(HttpServletRequest request) throws Exception {
-        String servletPath = request.getServletPath();
-        if (!this.mappingRegistry.getUrlMappingNames().contains(servletPath)){
+        if (this.mappingRegistry == null) { //to do initialization
+            this.mappingRegistry = new MappingRegistry();
+            initMapping();
+        }
+
+        String sPath = request.getServletPath();
+
+        if (!this.mappingRegistry.getUrlMappingNames().contains(sPath)) {
             return null;
         }
 
-        Method method = this.mappingRegistry.getMappingMethods().get(servletPath);
-        Object obj = this.mappingRegistry.getMappingObjs().get(servletPath);
-        HandlerMethod handlerMethod = new HandlerMethod(method, obj);
+        Method method = this.mappingRegistry.getMappingMethods().get(sPath);
+        Object obj = this.mappingRegistry.getMappingObjs().get(sPath);
+        Class<?> clz = this.mappingRegistry.getMappingClasses().get(sPath);
+        String methodName = this.mappingRegistry.getMappingMethodNames().get(sPath);
+
+        HandlerMethod handlerMethod = new HandlerMethod(method, obj, clz, methodName);
+
         return handlerMethod;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

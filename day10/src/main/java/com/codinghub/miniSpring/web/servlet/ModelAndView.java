@@ -1,5 +1,6 @@
 package com.codinghub.miniSpring.web.servlet;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ public class ModelAndView {
 	/**
 	 * 模型
 	 */
-	private Map<String, Object> model;
+	private Map<String, Object> model = new HashMap<>();
 
 	public ModelAndView() {
 	}
@@ -50,6 +51,8 @@ public class ModelAndView {
 		this.view = view;
 		addObject(modelName, modelObject);
 	}
+
+
 
 	/**
 	 * 设置视图名字
