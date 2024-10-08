@@ -72,33 +72,9 @@ public class DispatcherServlet extends HttpServlet {
      * 刷新动作
      */
     protected void Refresh() {
-        initController();
-
         initHandlerMappings(this.webApplicationContext);
         initHandlerAdapters(this.webApplicationContext);
         initViewResolvers(this.webApplicationContext);
-    }
-
-    /**
-     * 初始化控制层
-     */
-    protected void initController() {
-        this.controllerNames = Arrays.asList(this.webApplicationContext.getBeanDefinitionNames());
-
-        for (String controllerName : this.controllerNames) {
-            Object obj = null;
-            Class<?> clz = null;
-            try {
-                clz = Class.forName(controllerName);
-                this.controllerClasses.put(controllerName, clz);
-                this.controllerObjs.put(controllerName, this.webApplicationContext.getBean(controllerName));
-                System.out.println("controller : " + controllerName);
-            } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (BeansException ex) {
-                ex.printStackTrace();
-            }
-        }
     }
 
     /**
