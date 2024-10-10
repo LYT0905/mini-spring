@@ -16,11 +16,11 @@
 
 
 
-	<bean id="handlerMapping" class="com.codinghub.miniSpring.web.servlet.RequestMappingHandlerMapping"/>
+	<bean id="handlerMapping" class="com.codinghub.miniSpring.web.method.annotation.RequestMappingHandlerMapping"/>
 
-	<bean id="handlerAdapter" class="com.codinghub.miniSpring.web.servlet.RequestMappingHandlerAdapter">
+	<bean id="handlerAdapter" class="com.codinghub.miniSpring.web.method.annotation.RequestMappingHandlerAdapter">
 		<property type="com.codinghub.miniSpring.http.converter.HttpMessageConverter" name="messageConverter" ref="messageConverter"/>
-		<property type="com.codinghub.miniSpring.web.WebBindingInitializer" name="webBindingInitializer" ref="webBindingInitializer"/>
+		<property type="com.codinghub.miniSpring.web.bind.support.WebBindingInitializer" name="webBindingInitializer" ref="webBindingInitializer"/>
 	</bean>
 
 	<bean id="webBindingInitializer" class="com.codinghub.miniSpring.test.DateInitializer" />
