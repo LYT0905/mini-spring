@@ -17,7 +17,7 @@
 
 	<bean id="userService" class="com.codinghub.miniSpring.test.service.UserService" />
 
-	<bean id="dataSource" class="com.codinghub.miniSpring.jdbc.datasource.SingleConnectionDataSource">
+	<bean id="dataSource" class="com.codinghub.miniSpring.jdbc.pool.PooledDataSource">
 		<property type="String" name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
 		<property type="String" name="url" value="jdbc:mysql://localhost:3306/study_mini_spring?serverTimezone=UTC"/>
 		<property type="String" name="username" value="root"/>

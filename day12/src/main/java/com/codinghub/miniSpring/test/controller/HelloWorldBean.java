@@ -10,6 +10,7 @@ import com.codinghub.miniSpring.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author 莱特0905
@@ -69,6 +70,14 @@ public class HelloWorldBean {
     public User doTest8(HttpServletRequest request, HttpServletResponse response) {
         int userid = Integer.parseInt(request.getParameter("id"));
         User user = userService.getUserInfo(userid);
+        return user;
+    }
+
+    @RequestMapping("/test9")
+    @ResponseBody
+    public List<User> doTest9(HttpServletRequest request, HttpServletResponse response) {
+        int userid = Integer.parseInt(request.getParameter("id"));
+        List<User> user = userService.getUsers(userid);
         return user;
     }
 }
