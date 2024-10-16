@@ -57,6 +57,10 @@
 		<property type="String" name="suffix" value=".jsp" />
 	</bean>
 
+	<bean id="sqlSessionFactory" class="com.codinghub.miniSpring.batis.DefaultSqlSessionFactory" init-method="init">
+		<property type="String" name="mapperLocations" value="mapper"></property>
+	</bean>
+
 
 
 

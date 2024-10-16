@@ -1,5 +1,8 @@
 package com.codinghub.miniSpring.test.service;
 
+import com.codinghub.miniSpring.batis.DefaultSqlSession;
+import com.codinghub.miniSpring.batis.DefaultSqlSessionFactory;
+import com.codinghub.miniSpring.batis.SqlSession;
 import com.codinghub.miniSpring.beans.factory.annotation.Autowired;
 import com.codinghub.miniSpring.jdbc.core.JdbcTemplate;
 import com.codinghub.miniSpring.jdbc.core.PreparedStatementCallBack;
@@ -19,9 +22,13 @@ import java.util.List;
 public class UserService {
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    DefaultSqlSessionFactory sqlSessionFactory;
 
     public User getUserInfo(int userid) {
-        final String sql = "select id, name, age, birthday from user where id = ?";
+        String sqlId = "com.codinghub.miniSpring.test.User.getUserInfo";
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
         PreparedStatementCallBack preparedStatementCallBack = new PreparedStatementCallBack() {
             @Override
             public Object doInPreparedStatement(PreparedStatement stmt) throws SQLException {
@@ -38,9 +45,31 @@ public class UserService {
                 return rtnUser;
             }
         };
-        User query = (User) jdbcTemplate.query(sql, new Object[]{new Integer(userid)}, preparedStatementCallBack);
+        User query = (User) sqlSession.selectOne(sqlId, new Object[]{new Integer(userid)}, preparedStatementCallBack);
         return query;
     }
+
+//    public User getUserInfo(int userid) {
+//        final String sql = "select id, name, age, birthday from user where id = ?";
+//        PreparedStatementCallBack preparedStatementCallBack = new PreparedStatementCallBack() {
+//            @Override
+//            public Object doInPreparedStatement(PreparedStatement stmt) throws SQLException {
+//                ResultSet rs = stmt.executeQuery();
+//                User rtnUser = null;
+//                if (rs.next()) {
+//                    rtnUser = new User();
+//                    rtnUser.setId(userid);
+//                    rtnUser.setAge(rs.getInt("age"));
+//                    rtnUser.setName(rs.getString("name"));
+//                    rtnUser.setBirthday(new java.util.Date(rs.getDate("birthday").getTime()));
+//                } else {
+//                }
+//                return rtnUser;
+//            }
+//        };
+//        User query = (User) jdbcTemplate.query(sql, new Object[]{new Integer(userid)}, preparedStatementCallBack);
+//        return query;
+//    }
 
     public List<User> getUsers(int userId){
         final String sql = "select id, name, age, birthday from user where id >= ?";

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.codinghub.miniSpring.test.User">
+    <select id="getUserInfo" parameterType="java.lang.Integer" resultType="com.codinghub.miniSpring.test.User">
+        select id, name, age, birthday from user where id = ?
+    </select>
+</mapper>
