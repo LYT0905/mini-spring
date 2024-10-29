@@ -3,6 +3,7 @@ package com.codinghub.miniSpring.beans.factory.support;
 import com.codinghub.miniSpring.beans.BeansException;
 import com.codinghub.miniSpring.beans.PropertyValue;
 import com.codinghub.miniSpring.beans.PropertyValues;
+import com.codinghub.miniSpring.beans.factory.BeanFactoryAware;
 import com.codinghub.miniSpring.beans.factory.FactoryBean;
 import com.codinghub.miniSpring.beans.factory.config.BeanDefinition;
 import com.codinghub.miniSpring.beans.factory.config.ConfigurableBeanFactory;
@@ -58,6 +59,9 @@ public abstract class AbstractBeanFactory
                 if (beanDefinition != null) {
                     singleton = createBean(beanDefinition);
                     this.registerBean(beanName, singleton);
+                    if (singleton instanceof BeanFactoryAware) {
+                        ((BeanFactoryAware) singleton).setBeanFactory(this);
+                    }
                     // 进行beanpostprocessor处理
                     // step 1: postProcessBeforeInitialization Bean初始化前处理
                     applyBeanPostProcessorBeforeInitialization(singleton, beanName);

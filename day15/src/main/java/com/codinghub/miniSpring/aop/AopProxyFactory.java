@@ -8,8 +8,10 @@ package com.codinghub.miniSpring.aop;
 public interface AopProxyFactory {
     /**
      * 创建代理对象
-     * @param target 目标代理对象
+     *
+     * @param target  目标代理对象
+     * @param advisor 拦截器执行代理
      * @return AOP代理对象
      */
-    AopProxy createAopProxy(Object target);
+    AopProxy createAopProxy(Object target, Advisor advisor);
 }

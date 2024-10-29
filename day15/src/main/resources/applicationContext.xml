@@ -12,12 +12,16 @@
 <!--	</bean>-->
 <!--	<bean id="baseservice" class="com.codinghub.miniSpring.test.service.BaseService" />-->
 
+	<bean id="myInterceptor" class="com.codinghub.miniSpring.test.service.MyInterceptor" />
 
 	<bean id="realaction" class="com.codinghub.miniSpring.test.service.Action1" />
 
 	<bean id="action" class="com.codinghub.miniSpring.aop.ProxyFactoryBean" >
 		<property type="java.lang.Object" name="target" ref="realaction"/>
+		<property type="String" name="interceptorName" value="myInterceptor"/>
 	</bean>
+
+
 
 
 	<bean id="userService" class="com.codinghub.miniSpring.test.service.UserService" />

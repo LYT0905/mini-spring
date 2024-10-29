@@ -8,11 +8,13 @@ package com.codinghub.miniSpring.aop;
 public class DefaultAopProxyFactory implements AopProxyFactory{
     /**
      * 创建代理对象
-     * @param target 目标代理对象
+     *
+     * @param target  目标代理对象
+     * @param advisor 拦截器执行代理
      * @return AOP代理对象
      */
     @Override
-    public AopProxy createAopProxy(Object target) {
-        return new JdkDynamicAopProxy(target);
+    public AopProxy createAopProxy(Object target, Advisor advisor) {
+        return new JdkDynamicAopProxy(target, advisor);
     }
 }

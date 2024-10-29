@@ -1,5 +1,8 @@
 package com.codinghub.miniSpring.aop;
 
+import com.codinghub.miniSpring.beans.BeansException;
+import com.codinghub.miniSpring.beans.factory.BeanFactory;
+import com.codinghub.miniSpring.beans.factory.BeanFactoryAware;
 import com.codinghub.miniSpring.beans.factory.FactoryBean;
 import com.codinghub.miniSpring.utils.ClassUtils;
 
@@ -8,7 +11,12 @@ import com.codinghub.miniSpring.utils.ClassUtils;
  * @Description: 代理工厂Bean
  * @Date: 2024/10/25 16:52:29
  */
-public class ProxyFactoryBean implements FactoryBean<Object> {
+public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
+    /**
+     * Bean工厂
+     */
+    private BeanFactory beanFactory;
+
     /**
      * AOP代理工厂
      */
@@ -17,7 +25,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     /**
      * 拦截器名称
      */
-    private String[] interceptorNames;
+    private String interceptorName;
 
     /**
      * 目标名字
@@ -44,8 +52,18 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
      */
     private Object singletonInstance;
 
+    /**
+     * 拦截器代理
+     */
+    private Advisor advisor;
+
     public ProxyFactoryBean() {
         this.aopProxyFactory = new DefaultAopProxyFactory();
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     /**
@@ -55,6 +73,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
      */
     @Override
     public Object getObject() throws Exception {
+        initializeAdvisor();
         return getSingletonInstance();
     }
 
@@ -65,6 +84,28 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     @Override
     public Class<?> getObjectType() {
         return null;
+    }
+
+    /**
+     * 初始化拦截器代理
+     */
+    private synchronized void initializeAdvisor(){
+        Object advice = null;
+        MethodInterceptor mi = null;
+        try {
+            advice = this.beanFactory.getBean(this.interceptorName);
+        }catch (BeansException ex){
+            ex.printStackTrace();
+        }
+        if (advice instanceof BeforeAdvice){
+            mi = new MethodBeforeAdviceInterceptor((MethodBeforeAdvice)advice);
+        } else if (advice instanceof AfterAdvice) {
+            mi = new AfterReturningAdviceInterceptor((AfterReturningAdvice)advice);
+        } else if (advice instanceof MethodInterceptor) {
+            mi = (MethodInterceptor) advice;
+        }
+        advisor = new DefaultAdvisor();
+        advisor.setMethodInterceptor(mi);
     }
 
     /**
@@ -94,7 +135,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
      */
     protected AopProxy createAopProxy(){
         System.out.println("----------createAopProxy for :"+ target +"--------");
-        return getAopProxyFactory().createAopProxy(target);
+        return getAopProxyFactory().createAopProxy(target, this.advisor);
     }
 
     public void setAopProxyFactory(AopProxyFactory aopProxyFactory) {
@@ -103,10 +144,10 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     public AopProxyFactory getAopProxyFactory() {
         return this.aopProxyFactory;
     }
-    public void setInterceptorNames(String... interceptorNames) {
-        this.interceptorNames = interceptorNames;
-    }
 
+    public void setInterceptorName(String interceptorName) {
+        this.interceptorName = interceptorName;
+    }
     public void setTargetName(String targetName) {
         this.targetName = targetName;
     }
@@ -116,5 +157,4 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     public void setTarget(Object target) {
         this.target = target;
     }
-
 }
