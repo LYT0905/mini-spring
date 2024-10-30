@@ -4,6 +4,7 @@ import com.codinghub.miniSpring.beans.BeansException;
 import com.codinghub.miniSpring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.codinghub.miniSpring.beans.factory.config.BeanDefinition;
 import com.codinghub.miniSpring.beans.factory.config.BeanFactoryPostProcessor;
+import com.codinghub.miniSpring.beans.factory.config.BeanPostProcessor;
 import com.codinghub.miniSpring.beans.factory.config.ConfigurableListableBeanFactory;
 import com.codinghub.miniSpring.beans.factory.support.DefaultListableBeanFactory;
 import com.codinghub.miniSpring.context.*;
@@ -166,8 +167,19 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
      */
     @Override
     public void registerListeners(){
-        ApplicationListener listener = new ApplicationListener();
-        this.getApplicationEventPublisher().addApplicationListener(listener);
+        String[] bdNames = this.beanFactory.getBeanDefinitionNames();
+        for (String bdName : bdNames) {
+            Object bean = null;
+            try {
+                bean = getBean(bdName);
+            } catch (BeansException e1) {
+                e1.printStackTrace();
+            }
+
+            if (bean instanceof ApplicationListener) {
+                this.getApplicationEventPublisher().addApplicationListener((ApplicationListener<?>) bean);
+            }
+        }
     }
 
     @Override
@@ -182,7 +194,11 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
 
     @Override
     public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
-        this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+        try {
+            this.beanFactory.addBeanPostProcessor((BeanPostProcessor) (this.beanFactory.getBean("autowiredAnnotationBeanPostProcessor")));
+        }catch (BeansException ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override

@@ -7,8 +7,6 @@ import java.util.EventListener;
  * @Description: 应用监听对象
  * @Date: 2024/09/18 21:19:35
  */
-public class ApplicationListener implements EventListener {
-    void onApplicationEvent(ApplicationEvent event){
-        System.out.println(event.toString());
-    }
+public interface ApplicationListener<E extends ApplicationEvent> extends EventListener {
+    void onApplicationEvent(E event);
 }

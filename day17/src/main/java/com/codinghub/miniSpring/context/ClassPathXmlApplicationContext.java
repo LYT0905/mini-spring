@@ -1,11 +1,18 @@
 package com.codinghub.miniSpring.context;
 
+import com.codinghub.miniSpring.beans.BeansException;
 import com.codinghub.miniSpring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import com.codinghub.miniSpring.beans.factory.config.BeanDefinition;
+import com.codinghub.miniSpring.beans.factory.config.BeanFactoryPostProcessor;
+import com.codinghub.miniSpring.beans.factory.config.BeanPostProcessor;
 import com.codinghub.miniSpring.beans.factory.config.ConfigurableListableBeanFactory;
 import com.codinghub.miniSpring.beans.factory.support.DefaultListableBeanFactory;
 import com.codinghub.miniSpring.beans.factory.xml.XmlBeanDefinitionReader;
 import com.codinghub.miniSpring.core.ClassPathXmlResource;
 import com.codinghub.miniSpring.core.Resources;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 莱特0905
@@ -14,6 +21,8 @@ import com.codinghub.miniSpring.core.Resources;
  */
 public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
     DefaultListableBeanFactory beanFactory;
+    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors =
+            new ArrayList<BeanFactoryPostProcessor>();
 
     public ClassPathXmlApplicationContext(String fileName) {
         this(fileName, true);
@@ -41,9 +50,19 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
      */
     @Override
     public void registerListeners() {
-        ApplicationListener listener = new ApplicationListener();
-        this.getApplicationEventPublisher().addApplicationListener(listener);
+        String[] bdNames = this.beanFactory.getBeanDefinitionNames();
+        for (String bdName : bdNames) {
+            Object bean = null;
+            try {
+                bean = getBean(bdName);
+            } catch (BeansException e1) {
+                e1.printStackTrace();
+            }
 
+            if (bean instanceof ApplicationListener) {
+                this.getApplicationEventPublisher().addApplicationListener((ApplicationListener<?>) bean);
+            }
+        }
     }
 
     /**
@@ -61,6 +80,34 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
+        String[] beanDefinitionNames = this.beanFactory.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanDefinitionName);
+            String clzName = beanDefinition.getClassName();
+            Class<?> clz = null;
+            try {
+                clz = Class.forName(clzName);
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            if (BeanFactoryPostProcessor.class.isAssignableFrom(clz)) {
+                try {
+                    this.beanFactoryPostProcessors.add((BeanFactoryPostProcessor) clz.newInstance());
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        for (BeanFactoryPostProcessor beanFactoryPostProcessor : this.beanFactoryPostProcessors) {
+            try {
+                beanFactoryPostProcessor.postProcessBeanFactory(bf);
+            } catch (BeansException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -69,7 +116,24 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
      */
     @Override
     public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
-        this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+        String[] beanDefinitionNames = this.beanFactory.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanDefinitionName);
+            String clzName = beanDefinition.getClassName();
+            Class<?> clz = null;
+            try {
+                clz = Class.forName(clzName);
+            }catch (ClassNotFoundException ex){
+                ex.printStackTrace();
+            }
+            if (BeanPostProcessor.class.isAssignableFrom(clz)){
+                try {
+                    this.beanFactory.addBeanPostProcessor((BeanPostProcessor) this.beanFactory.getBean(beanDefinitionName));
+                }catch (BeansException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**

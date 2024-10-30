@@ -12,7 +12,16 @@
 <!--	</bean>-->
 <!--	<bean id="baseservice" class="com.codinghub.miniSpring.test.service.BaseService" />-->
 
-	<bean id="realaction" class="com.codinghub.miniSpring.test.service.Action1" />
+
+	<bean id="autoProxyCreator" class="com.codinghub.miniSpring.aop.framework.autoproxy.BeanNameAutoProxyCreator" >
+		<property type="String" name="pattern" value="action*" />
+		<property type="String" name="interceptorName" value="advisor" />
+	</bean>
+
+	<bean id="autowiredAnnotationBeanPostProcessor" class="com.codinghub.miniSpring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<bean id="action2" class="com.codinghub.miniSpring.test.service.Action2" />
+	<bean id="action" class="com.codinghub.miniSpring.test.service.Action1" />
 
 	<bena id="beforeAdvice" class="com.codinghub.miniSpring.test.service.MyBeforeAdvice" />
 
@@ -20,15 +29,6 @@
 		<property type="com.codinghub.miniSpring.aop.Advice" name="advice" ref="beforeAdvice"/>
 		<property type="String" name="mappedName" value="do*"/>
 	</bean>
-
-	<bean id="action" class="com.codinghub.miniSpring.aop.ProxyFactoryBean">
-		<property type="String" name="interceptorName" value="advisor" />
-		<property type="java.lang.Object" name="target" ref="realaction"/>
-	</bean>
-
-
-
-
 
 	<bean id="userService" class="com.codinghub.miniSpring.test.service.UserService" />
 
@@ -44,9 +44,6 @@
 		<property type="javax.sql.DataSource" name="dataSource" ref="dataSource"/>
 	</bean>
 
-
-
-	<bean id="autowiredAnnotationBeanPostProcessor" class="com.codinghub.miniSpring.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
 	<bean id="handlerMapping" class="com.codinghub.miniSpring.web.method.annotation.RequestMappingHandlerMapping"/>
 

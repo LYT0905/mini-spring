@@ -64,7 +64,7 @@ public abstract class AbstractBeanFactory
                     }
                     // 进行beanpostprocessor处理
                     // step 1: postProcessBeforeInitialization Bean初始化前处理
-                    applyBeanPostProcessorBeforeInitialization(singleton, beanName);
+                    singleton = applyBeanPostProcessorBeforeInitialization(singleton, beanName);
                     // step 2: init-method 初始化方法
                     if (beanDefinition.getInitMethodName() != null &&
                             !beanDefinition.getInitMethodName().equals("")) {
@@ -72,6 +72,9 @@ public abstract class AbstractBeanFactory
                     }
                     // step 3: postProcessAfterInitialization Bean初始化后处理
                     applyBeanPostProcessorAfterInitialization(singleton, beanName);
+
+                    this.removeSingleton(beanName);
+                    this.registerBean(beanName, singleton);
                 }else {
                     return null;
                 }

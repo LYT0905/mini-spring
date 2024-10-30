@@ -57,7 +57,7 @@ public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
      */
     @Override
     public Object postProcessorAfterInitialization(Object bean, String beanName) throws BeansException {
-        return null;
+        return bean;
     }
 
     @Override
