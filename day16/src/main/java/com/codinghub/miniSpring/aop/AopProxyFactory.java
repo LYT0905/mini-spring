@@ -13,5 +13,5 @@ public interface AopProxyFactory {
      * @param advisor 拦截器执行代理
      * @return AOP代理对象
      */
-    AopProxy createAopProxy(Object target, Advisor advisor);
+    AopProxy createAopProxy(Object target, PointcutAdvisor advisor);
 }

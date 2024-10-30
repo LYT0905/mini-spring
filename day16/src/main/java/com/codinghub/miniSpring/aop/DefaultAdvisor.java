@@ -31,4 +31,11 @@ public class DefaultAdvisor implements Advisor{
     public void setMethodInterceptor(MethodInterceptor methodInterceptor) {
         this.methodInterceptor = methodInterceptor;
     }
+
+    @Override
+    public Advice getAdvice() {
+        return this.methodInterceptor;
+    }
+
+
 }

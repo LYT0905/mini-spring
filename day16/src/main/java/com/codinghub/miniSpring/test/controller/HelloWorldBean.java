@@ -102,4 +102,9 @@ public class HelloWorldBean {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping("/testaop2")
+    public void doTestAop2(HttpServletRequest request, HttpServletResponse response) {
+        action.doSomething();
+    }
 }

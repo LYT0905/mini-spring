@@ -7,4 +7,6 @@ package com.codinghub.miniSpring.test.service;
  */
 public interface IAction {
     void doAction();
+
+    void doSomething();
 }

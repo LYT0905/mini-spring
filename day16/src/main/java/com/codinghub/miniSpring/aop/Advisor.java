@@ -17,4 +17,10 @@ public interface Advisor {
      * @param methodInterceptor 方法拦截器
      */
     void setMethodInterceptor(MethodInterceptor methodInterceptor);
+
+    /**
+     * 获取通知对象
+     * @return 通知对象
+     */
+    Advice getAdvice();
 }

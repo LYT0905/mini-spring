@@ -12,14 +12,20 @@
 <!--	</bean>-->
 <!--	<bean id="baseservice" class="com.codinghub.miniSpring.test.service.BaseService" />-->
 
-	<bean id="myInterceptor" class="com.codinghub.miniSpring.test.service.MyInterceptor" />
-
 	<bean id="realaction" class="com.codinghub.miniSpring.test.service.Action1" />
 
-	<bean id="action" class="com.codinghub.miniSpring.aop.ProxyFactoryBean" >
-		<property type="java.lang.Object" name="target" ref="realaction"/>
-		<property type="String" name="interceptorName" value="myInterceptor"/>
+	<bena id="beforeAdvice" class="com.codinghub.miniSpring.test.service.MyBeforeAdvice" />
+
+	<bean id="advisor" class="com.codinghub.miniSpring.aop.NameMatchMethodPointcutAdvisor">
+		<property type="com.codinghub.miniSpring.aop.Advice" name="advice" ref="beforeAdvice"/>
+		<property type="String" name="mappedName" value="do*"/>
 	</bean>
+
+	<bean id="action" class="com.codinghub.miniSpring.aop.ProxyFactoryBean">
+		<property type="String" name="interceptorName" value="advisor" />
+		<property type="java.lang.Object" name="target" ref="realaction"/>
+	</bean>
+
 
 
 

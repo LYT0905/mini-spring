@@ -14,7 +14,7 @@ public class DefaultAopProxyFactory implements AopProxyFactory{
      * @return AOP代理对象
      */
     @Override
-    public AopProxy createAopProxy(Object target, Advisor advisor) {
+    public AopProxy createAopProxy(Object target, PointcutAdvisor advisor) {
         return new JdkDynamicAopProxy(target, advisor);
     }
 }
